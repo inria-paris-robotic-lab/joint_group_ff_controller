@@ -1,0 +1,9 @@
+<library path="lib/libcustom_effort_controllers">
+
+  <class name="custom_effort_controllers/JointGroupPositionController" type="custom_effort_controllers::JointGroupPositionController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      The JointGroupPositionController tracks position commands for a set of joints. It expects a EffortJointInterface type of hardware interface.
+    </description>
+  </class>
+
+</library>
