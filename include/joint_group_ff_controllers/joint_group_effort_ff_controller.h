@@ -74,7 +74,9 @@ public:
 
   std::vector< std::string > joint_names_;
   std::vector< hardware_interface::JointHandle > joints_;
-  realtime_tools::RealtimeBuffer<std::vector<double> > commands_buffer_;
+  realtime_tools::RealtimeBuffer<std::vector<double> > commands_buffer_positions_;
+  realtime_tools::RealtimeBuffer<std::vector<double> > commands_buffer_velocities_;
+  realtime_tools::RealtimeBuffer<std::vector<double> > commands_buffer_efforts_;
   unsigned int n_joints_;
 
 private:
