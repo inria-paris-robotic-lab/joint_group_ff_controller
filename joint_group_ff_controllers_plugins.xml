@@ -1,0 +1,9 @@
+<library path="lib/libjoint_group_ff_controllers">
+
+  <class name="joint_group_ff_controllers/JointGroupEffortFFController" type="joint_group_ff_controllers::JointGroupEffortFFController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      The JointGroupEffortFFController tracks position, velocity and effort commands for a set of joints using a pid-feedforward controller. It expects a EffortJointInterface type of hardware interface.
+    </description>
+  </class>
+
+</library>

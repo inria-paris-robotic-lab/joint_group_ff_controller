@@ -1,18 +1,11 @@
 <package format="2">
-  <name>custom_effort_controllers</name>
+  <name>joint_group_ff_controllers</name>
   <version>0.17.2</version>
-  <description>custom_effort_controllers</description>
-  <maintainer email="bence.magyar.robotics@gmail.com">Bence Magyar</maintainer>
-  <maintainer email="mathias.luedtke@ipa.fraunhofer.de">Mathias Lüdtke</maintainer>
-  <maintainer email="enrique.fernandez.perdomo@gmail.com">Enrique Fernandez</maintainer>
+  <description>joint_group_ff_controllers</description>
+  <maintainer email="etienne.arlaud@inria.fr">EtienneAr</maintainer>
 
-  <license>BSD</license>
-
-  <url type="website">https://github.com/ros-controls/ros_controllers/wiki</url>
-  <url type="bugtracker">https://github.com/ros-controls/ros_controllers/issues</url>
-  <url type="repository">https://github.com/ros-controls/ros_controllers</url>
-
-  <author>Vijay Pradeep</author>
+  <author>EtienneAr</author>
+  <license>MIT</license>
 
   <buildtool_depend>catkin</buildtool_depend>
 
@@ -34,6 +27,6 @@
   <test_depend>xacro</test_depend>
 
   <export>
-    <controller_interface plugin="${prefix}/custom_effort_controllers_plugins.xml"/>
+    <controller_interface plugin="${prefix}/joint_group_ff_controllers_plugins.xml"/>
   </export>
 </package>

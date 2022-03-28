@@ -48,7 +48,7 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <urdf/model.h>
 
-namespace custom_effort_controllers
+namespace joint_group_ff_controllers
 {
 
 /**
@@ -64,11 +64,11 @@ namespace custom_effort_controllers
  * Subscribes to:
  * - \b command (std_msgs::Float64MultiArray) : The joint efforts to apply
  */
-class JointGroupPositionController : public controller_interface::Controller<hardware_interface::EffortJointInterface>
+class JointGroupEffortFFController : public controller_interface::Controller<hardware_interface::EffortJointInterface>
 {
 public:
-  JointGroupPositionController();
-  ~JointGroupPositionController();
+  JointGroupEffortFFController();
+  ~JointGroupEffortFFController();
 
   bool init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle &n);
   void update(const ros::Time& /*time*/, const ros::Duration& /*period*/);

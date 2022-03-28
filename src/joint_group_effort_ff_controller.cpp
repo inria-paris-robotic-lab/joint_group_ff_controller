@@ -35,11 +35,11 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#include <custom_effort_controllers/joint_group_position_controller.h>
+#include <joint_group_ff_controllers/joint_group_effort_ff_controller.h>
 #include <pluginlib/class_list_macros.hpp>
 #include <angles/angles.h>
 
-namespace custom_effort_controllers
+namespace joint_group_ff_controllers
 {
 
 /**
@@ -55,10 +55,10 @@ namespace custom_effort_controllers
  * Subscribes to:
  * - \b command (std_msgs::Float64MultiArray) : The joint efforts to apply
  */
-  JointGroupPositionController::JointGroupPositionController() {}
-  JointGroupPositionController::~JointGroupPositionController() {sub_command_.shutdown();}
+  JointGroupEffortFFController::JointGroupEffortFFController() {}
+  JointGroupEffortFFController::~JointGroupEffortFFController() {sub_command_.shutdown();}
 
-  bool JointGroupPositionController::init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle &n)
+  bool JointGroupEffortFFController::init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle &n)
   {
     // List of controlled joints
     std::string param_name = "joints";
@@ -116,11 +116,11 @@ namespace custom_effort_controllers
 
     commands_buffer_.writeFromNonRT(std::vector<double>(n_joints_, 0.0));
 
-    sub_command_ = n.subscribe<std_msgs::Float64MultiArray>("command", 1, &JointGroupPositionController::commandCB, this);
+    sub_command_ = n.subscribe<std_msgs::Float64MultiArray>("command", 1, &JointGroupEffortFFController::commandCB, this);
     return true;
   }
 
-  void JointGroupPositionController::update(const ros::Time& time, const ros::Duration& period)
+  void JointGroupEffortFFController::update(const ros::Time& time, const ros::Duration& period)
   {
     std::vector<double> & commands = *commands_buffer_.readFromRT();
     for(unsigned int i=0; i<n_joints_; i++)
@@ -162,7 +162,7 @@ namespace custom_effort_controllers
     }
   }
 
-  void JointGroupPositionController::commandCB(const std_msgs::Float64MultiArrayConstPtr& msg)
+  void JointGroupEffortFFController::commandCB(const std_msgs::Float64MultiArrayConstPtr& msg)
   {
     if(msg->data.size()!=n_joints_)
     {
@@ -172,7 +172,7 @@ namespace custom_effort_controllers
     commands_buffer_.writeFromNonRT(msg->data);
   }
 
-  void JointGroupPositionController::enforceJointLimits(double &command, unsigned int index)
+  void JointGroupEffortFFController::enforceJointLimits(double &command, unsigned int index)
   {
     // Check that this joint has applicable limits
     if (joint_urdfs_[index]->type == urdf::Joint::REVOLUTE || joint_urdfs_[index]->type == urdf::Joint::PRISMATIC)
@@ -190,4 +190,4 @@ namespace custom_effort_controllers
 
 } // namespace
 
-PLUGINLIB_EXPORT_CLASS( custom_effort_controllers::JointGroupPositionController, controller_interface::ControllerBase)
+PLUGINLIB_EXPORT_CLASS( joint_group_ff_controllers::JointGroupEffortFFController, controller_interface::ControllerBase)

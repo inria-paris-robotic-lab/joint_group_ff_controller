@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(custom_effort_controllers)
+project(joint_group_ff_controllers)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -37,7 +37,7 @@ catkin_package(
   )
 
 add_library(${PROJECT_NAME}
-  src/joint_group_position_controller.cpp
+  src/joint_group_effort_ff_controller.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
@@ -53,5 +53,5 @@ install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
   )
 
-install(FILES custom_effort_controllers_plugins.xml
+install(FILES joint_group_ff_controllers_plugins.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
