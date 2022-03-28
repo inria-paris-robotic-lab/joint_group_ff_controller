@@ -39,7 +39,6 @@
 
 
 #include <control_msgs/JointControllerState.h>
-#include <control_toolbox/pid.h>
 #include <controller_interface/controller.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <realtime_tools/realtime_buffer.h>
@@ -82,7 +81,8 @@ public:
 private:
   ros::Subscriber sub_command_;
 
-  std::vector<control_toolbox::Pid> pid_controllers_;       /**< Internal PID controllers. */
+  std::vector<double> kp_;       /**< Internal PID controllers. */
+  std::vector<double> kd_;       /**< Internal PID controllers. */
 
   void commandCB(const joint_group_ff_controllers::effort_commandConstPtr& msg);
 }; // class

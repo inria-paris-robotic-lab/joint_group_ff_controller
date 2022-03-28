@@ -74,7 +74,8 @@ namespace joint_group_ff_controllers
       return false;
     }
 
-    pid_controllers_.resize(n_joints_);
+    kp_.resize(n_joints_);
+    kd_.resize(n_joints_);
 
     for(unsigned int i=0; i<n_joints_; i++)
     {
@@ -90,10 +91,11 @@ namespace joint_group_ff_controllers
         return false;
       }
 
-      // Load PID Controller using gains set on parameter server
-      if (!pid_controllers_[i].init(ros::NodeHandle(n, joint_name + "/pid")))
+      // Fetch gains
+      if(!n.getParam(joint_name + "/kp", kp_[i]) ||
+         !n.getParam(joint_name + "/kd", kd_[i]) )
       {
-        ROS_ERROR_STREAM("Failed to load PID parameters from " << joint_name + "/pid");
+        ROS_ERROR_STREAM("Unable to read kp, kd parameters for joint: " << joint_name);
         return false;
       }
     }
@@ -113,19 +115,20 @@ namespace joint_group_ff_controllers
     std::vector<double> & commands_efforts = *commands_buffer_efforts_.readFromRT();
     for(unsigned int i=0; i<n_joints_; i++)
     {
-        double command_position = commands_positions[i];
-
-        double error; //, vel_error;
-        double commanded_effort;
+        double command_position = commands_positions [i];
+        double command_velocity = commands_velocities[i];
+        double command_effort   = commands_efforts   [i];
 
         double current_position = joints_[i].getPosition();
+        double current_velocity = joints_[i].getVelocity();
 
         // Compute position error
-        error = command_position - current_position;
+        double position_error = command_position - current_position;
+        double velocity_error = command_velocity - current_velocity;
 
         // Set the PID error and compute the PID command with nonuniform
         // time step size.
-        commanded_effort = pid_controllers_[i].computeCommand(error, period);
+        double commanded_effort = kp_[i] * position_error + kd_[i] * velocity_error + command_effort;
 
         joints_[i].setCommand(commanded_effort);
     }
