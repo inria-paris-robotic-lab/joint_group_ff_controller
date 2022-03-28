@@ -108,7 +108,12 @@ namespace joint_group_ff_controllers
     }
 
     // Init commands
-    commands_buffer_.writeFromNonRT(EffortSetPoint(n_joints_));
+    joint_group_ff_controllers::effort_command dummy;
+    dummy.positions = std::vector<double>(n_joints_, 0.);
+    dummy.velocities = std::vector<double>(n_joints_, 0.);
+    dummy.efforts = std::vector<double>(n_joints_, 0.);
+    dummy.timeout = ros::Duration(0);
+    commands_buffer_.writeFromNonRT(dummy);
 
     sub_command_ = n.subscribe<joint_group_ff_controllers::effort_command>("command", 1, &JointGroupEffortFFController::commandCB, this);
     return true;
@@ -116,7 +121,7 @@ namespace joint_group_ff_controllers
 
   void JointGroupEffortFFController::update(const ros::Time& time, const ros::Duration& period)
   {
-    EffortSetPoint& commands_ = *commands_buffer_.readFromRT();
+    joint_group_ff_controllers::effort_command& commands_ = *commands_buffer_.readFromRT();
     for(unsigned int i=0; i<n_joints_; i++)
     {
         double command_position = commands_.positions [i];
@@ -154,8 +159,7 @@ namespace joint_group_ff_controllers
       ROS_ERROR_STREAM("Dimension of command efforts (" << msg->efforts.size() << ") does not match number of joints (" << n_joints_ << ")! Not executing!");
       return;
     }
-    EffortSetPoint sp(msg->positions, msg->velocities, msg->efforts);
-    commands_buffer_.writeFromNonRT(sp);
+    commands_buffer_.writeFromNonRT(*msg);
   }
 
 } // namespace

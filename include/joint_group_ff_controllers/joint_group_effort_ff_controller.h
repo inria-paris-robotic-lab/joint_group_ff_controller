@@ -49,24 +49,6 @@
 namespace joint_group_ff_controllers
 {
 
-class EffortSetPoint {
-  public:
-    EffortSetPoint() {};
-
-    EffortSetPoint(int size) :
-      positions(size, 0.),
-      velocities(size, 0.),
-      efforts(size, 0.)
-      {};
-
-    EffortSetPoint(std::vector<double> positions, std::vector<double> velocities, std::vector<double> efforts) :
-      positions(positions), velocities(velocities), efforts(efforts) {};
-
-    std::vector<double> positions;
-    std::vector<double> velocities;
-    std::vector<double> efforts;
-};
-
 /**
  * \brief Forward command controller for a set of effort controlled joints (torque or force).
  *
@@ -92,7 +74,7 @@ public:
 private:
   std::vector< std::string > joint_names_;
   std::vector< hardware_interface::JointHandle > joints_;
-  realtime_tools::RealtimeBuffer<EffortSetPoint> commands_buffer_;
+  realtime_tools::RealtimeBuffer<joint_group_ff_controllers::effort_command> commands_buffer_;
   unsigned int n_joints_;
 
   std::vector<double> kp_;
