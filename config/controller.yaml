@@ -1,4 +1,4 @@
-arm_right_controller:
+arm_right_controller_test:
   type: joint_group_ff_controllers/JointGroupEffortFFController
   joints:
   - arm_right_1_joint
@@ -26,7 +26,7 @@ arm_right_controller:
     arm_right_7_joint: 1.0
   stop_trajectory_duration: 0.5
 
-arm_left_controller:
+arm_left_controller_test:
   type: joint_group_ff_controllers/JointGroupEffortFFController
   joints:
   - arm_left_1_joint
