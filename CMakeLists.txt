@@ -18,9 +18,17 @@ find_package(catkin REQUIRED COMPONENTS
   realtime_tools
   urdf
   pluginlib
+  std_msgs
+  message_generation
 )
 
 include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
+
+add_message_files( FILES
+  effort_command.msg
+)
+
+generate_messages(DEPENDENCIES std_msgs)
 
 # Declare catkin package
 catkin_package(
@@ -32,6 +40,7 @@ catkin_package(
     forward_command_controller
     realtime_tools
     urdf
+    message_runtime
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   )
