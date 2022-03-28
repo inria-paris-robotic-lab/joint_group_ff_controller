@@ -49,6 +49,24 @@
 namespace joint_group_ff_controllers
 {
 
+class EffortSetPoint {
+  public:
+    EffortSetPoint() {};
+
+    EffortSetPoint(int size) :
+      positions(size, 0.),
+      velocities(size, 0.),
+      efforts(size, 0.)
+      {};
+
+    EffortSetPoint(std::vector<double> positions, std::vector<double> velocities, std::vector<double> efforts) :
+      positions(positions), velocities(velocities), efforts(efforts) {};
+
+    std::vector<double> positions;
+    std::vector<double> velocities;
+    std::vector<double> efforts;
+};
+
 /**
  * \brief Forward command controller for a set of effort controlled joints (torque or force).
  *
@@ -71,19 +89,18 @@ public:
   bool init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle &n);
   void update(const ros::Time& /*time*/, const ros::Duration& /*period*/);
 
+private:
   std::vector< std::string > joint_names_;
   std::vector< hardware_interface::JointHandle > joints_;
-  realtime_tools::RealtimeBuffer<std::vector<double> > commands_buffer_positions_;
-  realtime_tools::RealtimeBuffer<std::vector<double> > commands_buffer_velocities_;
-  realtime_tools::RealtimeBuffer<std::vector<double> > commands_buffer_efforts_;
+  realtime_tools::RealtimeBuffer<EffortSetPoint> commands_buffer_;
   unsigned int n_joints_;
 
-private:
+  std::vector<double> kp_;
+  std::vector<double> kd_;
+  std::vector<double> kp_safe_;
+  std::vector<double> kd_safe_;
+
   ros::Subscriber sub_command_;
-
-  std::vector<double> kp_;       /**< Internal PID controllers. */
-  std::vector<double> kd_;       /**< Internal PID controllers. */
-
   void commandCB(const joint_group_ff_controllers::effort_commandConstPtr& msg);
 }; // class
 

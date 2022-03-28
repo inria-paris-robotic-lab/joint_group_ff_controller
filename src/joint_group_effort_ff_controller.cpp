@@ -74,9 +74,13 @@ namespace joint_group_ff_controllers
       return false;
     }
 
+    // Init gains
     kp_.resize(n_joints_);
     kd_.resize(n_joints_);
+    kp_safe_.resize(n_joints_);
+    kd_safe_.resize(n_joints_);
 
+    // Init joints and parameters
     for(unsigned int i=0; i<n_joints_; i++)
     {
       const auto& joint_name = joint_names_[i];
@@ -93,16 +97,18 @@ namespace joint_group_ff_controllers
 
       // Fetch gains
       if(!n.getParam(joint_name + "/kp", kp_[i]) ||
-         !n.getParam(joint_name + "/kd", kd_[i]) )
+         !n.getParam(joint_name + "/kd", kd_[i]) ||
+         !n.getParam(joint_name + "/kp_safe", kp_safe_[i]) ||
+         !n.getParam(joint_name + "/kd_safe", kd_safe_[i])
+         )
       {
-        ROS_ERROR_STREAM("Unable to read kp, kd parameters for joint: " << joint_name);
+        ROS_ERROR_STREAM("Unable to read kp, kd, kp_safe, kd_safe parameters for joint: " << joint_name);
         return false;
       }
     }
 
-    commands_buffer_positions_.writeFromNonRT(std::vector<double>(n_joints_, 0.0));
-    commands_buffer_velocities_.writeFromNonRT(std::vector<double>(n_joints_, 0.0));
-    commands_buffer_efforts_.writeFromNonRT(std::vector<double>(n_joints_, 0.0));
+    // Init commands
+    commands_buffer_.writeFromNonRT(EffortSetPoint(n_joints_));
 
     sub_command_ = n.subscribe<joint_group_ff_controllers::effort_command>("command", 1, &JointGroupEffortFFController::commandCB, this);
     return true;
@@ -110,14 +116,12 @@ namespace joint_group_ff_controllers
 
   void JointGroupEffortFFController::update(const ros::Time& time, const ros::Duration& period)
   {
-    std::vector<double> & commands_positions = *commands_buffer_positions_.readFromRT();
-    std::vector<double> & commands_velocities = *commands_buffer_velocities_.readFromRT();
-    std::vector<double> & commands_efforts = *commands_buffer_efforts_.readFromRT();
+    EffortSetPoint& commands_ = *commands_buffer_.readFromRT();
     for(unsigned int i=0; i<n_joints_; i++)
     {
-        double command_position = commands_positions [i];
-        double command_velocity = commands_velocities[i];
-        double command_effort   = commands_efforts   [i];
+        double command_position = commands_.positions [i];
+        double command_velocity = commands_.velocities[i];
+        double command_effort   = commands_.efforts   [i];
 
         double current_position = joints_[i].getPosition();
         double current_velocity = joints_[i].getVelocity();
@@ -126,8 +130,7 @@ namespace joint_group_ff_controllers
         double position_error = command_position - current_position;
         double velocity_error = command_velocity - current_velocity;
 
-        // Set the PID error and compute the PID command with nonuniform
-        // time step size.
+        // Compute command
         double commanded_effort = kp_[i] * position_error + kd_[i] * velocity_error + command_effort;
 
         joints_[i].setCommand(commanded_effort);
@@ -151,9 +154,8 @@ namespace joint_group_ff_controllers
       ROS_ERROR_STREAM("Dimension of command efforts (" << msg->efforts.size() << ") does not match number of joints (" << n_joints_ << ")! Not executing!");
       return;
     }
-    commands_buffer_positions_.writeFromNonRT(msg->positions);
-    commands_buffer_velocities_.writeFromNonRT(msg->velocities);
-    commands_buffer_efforts_.writeFromNonRT(msg->efforts);
+    EffortSetPoint sp(msg->positions, msg->velocities, msg->efforts);
+    commands_buffer_.writeFromNonRT(sp);
   }
 
 } // namespace
