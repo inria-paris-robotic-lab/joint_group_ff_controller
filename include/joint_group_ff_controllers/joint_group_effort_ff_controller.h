@@ -45,6 +45,7 @@
 #include <realtime_tools/realtime_publisher.h>
 #include <ros/node_handle.h>
 #include <joint_group_ff_controllers/effort_command.h>
+#include <joint_group_ff_controllers/rt_stopwatch.h>
 
 namespace joint_group_ff_controllers
 {
@@ -84,6 +85,10 @@ private:
 
   ros::Subscriber sub_command_;
   void commandCB(const joint_group_ff_controllers::effort_commandConstPtr& msg);
+
+  bool are_positions_held_;
+  std::vector<double> held_positions_;
+  RTStopwatch last_command_;
 }; // class
 
 } // namespace

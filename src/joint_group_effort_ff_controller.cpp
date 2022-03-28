@@ -109,11 +109,12 @@ namespace joint_group_ff_controllers
 
     // Init commands
     joint_group_ff_controllers::effort_command dummy;
-    dummy.positions = std::vector<double>(n_joints_, 0.);
-    dummy.velocities = std::vector<double>(n_joints_, 0.);
-    dummy.efforts = std::vector<double>(n_joints_, 0.);
     dummy.timeout = ros::Duration(0);
     commands_buffer_.writeFromNonRT(dummy);
+
+    // Init safety measures
+    are_positions_held_ = false;
+    held_positions_ = std::vector<double>(n_joints_);
 
     sub_command_ = n.subscribe<joint_group_ff_controllers::effort_command>("command", 1, &JointGroupEffortFFController::commandCB, this);
     return true;
@@ -122,11 +123,16 @@ namespace joint_group_ff_controllers
   void JointGroupEffortFFController::update(const ros::Time& time, const ros::Duration& period)
   {
     joint_group_ff_controllers::effort_command& commands_ = *commands_buffer_.readFromRT();
+    bool timeout = commands_.timeout.isZero() || (last_command_.incr(period) > commands_.timeout);
     for(unsigned int i=0; i<n_joints_; i++)
     {
-        double command_position = commands_.positions [i];
-        double command_velocity = commands_.velocities[i];
-        double command_effort   = commands_.efforts   [i];
+        if(!are_positions_held_) { //first time that the timeout reached => save current robot position
+          held_positions_[i] = joints_[i].getPosition();
+        }
+
+        double command_position = timeout ? held_positions_[i] : commands_.positions [i];
+        double command_velocity = timeout ? 0                  : commands_.velocities[i];
+        double command_effort   = timeout ? 0                  : commands_.efforts   [i];
 
         double current_position = joints_[i].getPosition();
         double current_velocity = joints_[i].getVelocity();
@@ -136,10 +142,16 @@ namespace joint_group_ff_controllers
         double velocity_error = command_velocity - current_velocity;
 
         // Compute command
-        double commanded_effort = kp_[i] * position_error + kd_[i] * velocity_error + command_effort;
+        double commanded_effort = (timeout ? kp_safe_[i] : kp_[i]) * position_error
+                                + (timeout ? kd_safe_[i] : kd_[i]) * velocity_error
+                                + command_effort;
 
         joints_[i].setCommand(commanded_effort);
     }
+    if(timeout && !are_positions_held_) {
+      ROS_ERROR_STREAM("Timeout reached, controller now try to hold current position until next valid command");
+    }
+    are_positions_held_ = timeout;
   }
 
   void JointGroupEffortFFController::commandCB(const joint_group_ff_controllers::effort_commandConstPtr& msg)
@@ -160,6 +172,7 @@ namespace joint_group_ff_controllers
       return;
     }
     commands_buffer_.writeFromNonRT(*msg);
+    last_command_.reset();
   }
 
 } // namespace
