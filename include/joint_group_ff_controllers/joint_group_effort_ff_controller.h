@@ -45,7 +45,7 @@
 #include <realtime_tools/realtime_buffer.h>
 #include <realtime_tools/realtime_publisher.h>
 #include <ros/node_handle.h>
-#include <std_msgs/Float64MultiArray.h>
+#include <joint_group_ff_controllers/effort_command.h>
 #include <urdf/model.h>
 
 namespace joint_group_ff_controllers
@@ -85,7 +85,7 @@ private:
 
   std::vector<urdf::JointConstSharedPtr> joint_urdfs_;
 
-  void commandCB(const std_msgs::Float64MultiArrayConstPtr& msg);
+  void commandCB(const joint_group_ff_controllers::effort_commandConstPtr& msg);
   void enforceJointLimits(double &command, unsigned int index);
 }; // class
 

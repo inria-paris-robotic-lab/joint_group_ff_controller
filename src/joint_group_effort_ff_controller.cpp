@@ -116,7 +116,7 @@ namespace joint_group_ff_controllers
 
     commands_buffer_.writeFromNonRT(std::vector<double>(n_joints_, 0.0));
 
-    sub_command_ = n.subscribe<std_msgs::Float64MultiArray>("command", 1, &JointGroupEffortFFController::commandCB, this);
+    sub_command_ = n.subscribe<joint_group_ff_controllers::effort_command>("command", 1, &JointGroupEffortFFController::commandCB, this);
     return true;
   }
 
@@ -162,14 +162,14 @@ namespace joint_group_ff_controllers
     }
   }
 
-  void JointGroupEffortFFController::commandCB(const std_msgs::Float64MultiArrayConstPtr& msg)
+  void JointGroupEffortFFController::commandCB(const joint_group_ff_controllers::effort_commandConstPtr& msg)
   {
-    if(msg->data.size()!=n_joints_)
+    if(msg->positions.size()!=n_joints_)
     {
-      ROS_ERROR_STREAM("Dimension of command (" << msg->data.size() << ") does not match number of joints (" << n_joints_ << ")! Not executing!");
+      ROS_ERROR_STREAM("Dimension of command (" << msg->positions.size() << ") does not match number of joints (" << n_joints_ << ")! Not executing!");
       return;
     }
-    commands_buffer_.writeFromNonRT(msg->data);
+    commands_buffer_.writeFromNonRT(msg->positions);
   }
 
   void JointGroupEffortFFController::enforceJointLimits(double &command, unsigned int index)
