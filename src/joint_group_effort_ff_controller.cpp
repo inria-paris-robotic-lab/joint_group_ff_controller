@@ -74,14 +74,6 @@ namespace joint_group_ff_controllers
       return false;
     }
 
-    // Get URDF
-    urdf::Model urdf;
-    if (!urdf.initParam("robot_description"))
-    {
-      ROS_ERROR("Failed to parse urdf file");
-      return false;
-    }
-
     pid_controllers_.resize(n_joints_);
 
     for(unsigned int i=0; i<n_joints_; i++)
@@ -97,14 +89,6 @@ namespace joint_group_ff_controllers
         ROS_ERROR_STREAM("Exception thrown: " << e.what());
         return false;
       }
-
-      urdf::JointConstSharedPtr joint_urdf = urdf.getJoint(joint_name);
-      if (!joint_urdf)
-      {
-        ROS_ERROR("Could not find joint '%s' in urdf", joint_name.c_str());
-        return false;
-      }
-      joint_urdfs_.push_back(joint_urdf);
 
       // Load PID Controller using gains set on parameter server
       if (!pid_controllers_[i].init(ros::NodeHandle(n, joint_name + "/pid")))
@@ -132,27 +116,8 @@ namespace joint_group_ff_controllers
 
         double current_position = joints_[i].getPosition();
 
-        // Make sure joint is within limits if applicable
-        enforceJointLimits(command_position, i);
-
         // Compute position error
-        if (joint_urdfs_[i]->type == urdf::Joint::REVOLUTE)
-        {
-          angles::shortest_angular_distance_with_large_limits(
-            current_position,
-            command_position,
-            joint_urdfs_[i]->limits->lower,
-            joint_urdfs_[i]->limits->upper,
-            error);
-        }
-        else if (joint_urdfs_[i]->type == urdf::Joint::CONTINUOUS)
-        {
-          error = angles::shortest_angular_distance(current_position, command_position);
-        }
-        else //prismatic
-        {
-          error = command_position - current_position;
-        }
+        error = command_position - current_position;
 
         // Set the PID error and compute the PID command with nonuniform
         // time step size.
@@ -170,22 +135,6 @@ namespace joint_group_ff_controllers
       return;
     }
     commands_buffer_.writeFromNonRT(msg->positions);
-  }
-
-  void JointGroupEffortFFController::enforceJointLimits(double &command, unsigned int index)
-  {
-    // Check that this joint has applicable limits
-    if (joint_urdfs_[index]->type == urdf::Joint::REVOLUTE || joint_urdfs_[index]->type == urdf::Joint::PRISMATIC)
-    {
-      if( command > joint_urdfs_[index]->limits->upper ) // above upper limnit
-      {
-        command = joint_urdfs_[index]->limits->upper;
-      }
-      else if( command < joint_urdfs_[index]->limits->lower ) // below lower limit
-      {
-        command = joint_urdfs_[index]->limits->lower;
-      }
-    }
   }
 
 } // namespace

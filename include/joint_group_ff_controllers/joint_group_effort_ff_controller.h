@@ -46,7 +46,6 @@
 #include <realtime_tools/realtime_publisher.h>
 #include <ros/node_handle.h>
 #include <joint_group_ff_controllers/effort_command.h>
-#include <urdf/model.h>
 
 namespace joint_group_ff_controllers
 {
@@ -83,10 +82,7 @@ private:
 
   std::vector<control_toolbox::Pid> pid_controllers_;       /**< Internal PID controllers. */
 
-  std::vector<urdf::JointConstSharedPtr> joint_urdfs_;
-
   void commandCB(const joint_group_ff_controllers::effort_commandConstPtr& msg);
-  void enforceJointLimits(double &command, unsigned int index);
 }; // class
 
 } // namespace
