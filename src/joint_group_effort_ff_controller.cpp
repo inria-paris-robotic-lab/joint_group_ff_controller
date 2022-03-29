@@ -123,7 +123,7 @@ namespace joint_group_ff_controllers
   void JointGroupEffortFFController::update(const ros::Time& time, const ros::Duration& period)
   {
     joint_group_ff_controllers::effort_command& commands_ = *commands_buffer_.readFromRT();
-    bool timeout = commands_.timeout.isZero() || (last_command_.incr(period) > commands_.timeout);
+    bool timeout = commands_.timeout.isZero() || (last_command_.incr(period) > commands_.timeout && commands_.timeout > ros::Duration(0));
     for(unsigned int i=0; i<n_joints_; i++)
     {
         if(!are_positions_held_) { //first time that the timeout reached => save current robot position
