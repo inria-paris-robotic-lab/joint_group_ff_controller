@@ -149,7 +149,7 @@ namespace joint_group_ff_controllers
         joints_[i].setCommand(commanded_effort);
     }
     if(timeout && !are_positions_held_) {
-      ROS_ERROR_STREAM("Timeout reached, controller now try to hold current position until next valid command");
+      ROS_WARN_STREAM("Timeout reached, controller now try to hold current position until next valid command");
     }
     are_positions_held_ = timeout;
   }
