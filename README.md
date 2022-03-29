@@ -31,7 +31,8 @@ To build from source, clone the latest version from this repository into your ca
 
 ## Effort controller : joint_group_effort_ff_controller
 
-This controller tracks position, velocity and effort commands for a set of joints using a pid-feedforward controller. It expects a EffortJointInterface type of hardware interface. The control is done as followed, for each joint : <br/>
+This controller tracks position, velocity and effort commands for a set of joints using a pd-feedforward controller.<br/>
+It expects a EffortJointInterface type of hardware interface. The control is done as followed, for each joint : <br/>
 ![block_effort.png](./materials/block_effort.png)
 
 
@@ -39,7 +40,7 @@ This controller tracks position, velocity and effort commands for a set of joint
 
 * **`command`** ([joint_group_ff_controllers/effort_command])
 
-	The positions, velocities and efforts set point for each joint, aswell as the timeout value.  
+	The positions, velocities and efforts set point for each joint, aswell as the timeout value.<br/>
 	*Note: if `timeout < 0`, then the timeout is ignored and the command will be executed indefinitely.*
 
 ### Parameters

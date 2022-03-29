@@ -12,17 +12,24 @@ namespace joint_group_ff_controllers
 {
 
 /**
- * \brief Forward command controller for a set of effort controlled joints (torque or force).
+ * \brief Tracks position, velocity and effort commands for a set of joints using a PD-feedforward controller.
  *
- * This class forwards the commanded efforts down to a set of joints.
+ * The controller has two functionning mode :
+ * - The normal one that applies a feedforward-PD,
+ * - The safety one that tries to keep the joint in their current position, using a simple PD, if the timeout is reached (for safety purposes).
  *
  * \section ROS interface
  *
  * \param type Must be "JointGroupEffortController".
  * \param joints List of names of the joints to control.
+ * For each joint :
+ * \param <joint>/kp Position gain
+ * \param <joint>/kd Velocity gain
+ * \param <joint>/kp_safe Position gain when timeout occured
+ * \param <joint>/kd_safe Velocity gain when timeout occured
  *
  * Subscribes to:
- * - \b command (std_msgs::Float64MultiArray) : The joint efforts to apply
+ * - \b command (joint_group_ff_controllers::effort_command) : The joint positions, velocities and efforts to apply, aswell as the timeout value. (if timeout < 0, then no timeout will be applied)
  */
 class JointGroupEffortFFController : public controller_interface::Controller<hardware_interface::EffortJointInterface>
 {
@@ -39,17 +46,20 @@ private:
   realtime_tools::RealtimeBuffer<joint_group_ff_controllers::effort_command> commands_buffer_;
   unsigned int n_joints_;
 
+  // Gains
   std::vector<double> kp_;
   std::vector<double> kd_;
   std::vector<double> kp_safe_;
   std::vector<double> kd_safe_;
 
+  // Command subscriber
   ros::Subscriber sub_command_;
   void commandCB(const joint_group_ff_controllers::effort_commandConstPtr& msg);
 
-  bool are_positions_held_;
-  std::vector<double> held_positions_;
-  RTStopwatch last_command_;
+  // Timeout purposes
+  bool are_positions_held_; /* Has the timeout already been reached */
+  std::vector<double> held_positions_; /* Last joint position before the tiemout has been reached */
+  RTStopwatch last_command_; /* Keep the time since the last command has been received */
 }; // class
 
 } // namespace
