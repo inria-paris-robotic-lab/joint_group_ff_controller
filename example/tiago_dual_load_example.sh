@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Unload curernt arm controllers for tiago dual and replace them for joint_group_ff_controllers/JointGroupEffortFFController
+
+# Upload controllers parameters on server
+rosparam load $(rospack find joint_group_ff_controllers)/example/tiago_dual_example_config.yaml
+
+# Stop and unload default tiago dual controller
+rosrun controller_manager controller_manager stop arm_left_controller arm_right_controller
+rosrun controller_manager controller_manager unload arm_left_controller arm_right_controller
+
+# Stop and unload potential previous joint_group_ff_controllers/JointGroupEffortFFController already started
+rosrun controller_manager controller_manager stop arm_left_controller_test arm_right_controller_test
+rosrun controller_manager controller_manager unload arm_left_controller_test arm_right_controller_test
+
+# Load and run new joint_group_ff_controllers/JointGroupEffortFFController controlles
+rosrun controller_manager controller_manager spawn arm_left_controller_test arm_right_controller_test

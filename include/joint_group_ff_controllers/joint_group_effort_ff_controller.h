@@ -20,7 +20,7 @@ namespace joint_group_ff_controllers
  *
  * \section ROS interface
  *
- * \param type Must be "JointGroupEffortController".
+ * \param type Must be "joint_group_ff_controllers/JointGroupEffortFFController".
  * \param joints List of names of the joints to control.
  * For each joint :
  * \param <joint>/kp Position gain
