@@ -10,13 +10,10 @@ set(DISABLE_PAL_FLAGS True) # Prevent some compilation flags (e.g -Wshadow)
 
 # Load catkin and all dependencies required for this package
 find_package(catkin REQUIRED COMPONENTS
-  angles
   controller_interface
   control_msgs
-  control_toolbox
   forward_command_controller
   realtime_tools
-  urdf
   pluginlib
   std_msgs
   message_generation
@@ -33,13 +30,10 @@ generate_messages(DEPENDENCIES std_msgs)
 # Declare catkin package
 catkin_package(
   CATKIN_DEPENDS
-    angles
     controller_interface
     control_msgs
-    control_toolbox
     forward_command_controller
     realtime_tools
-    urdf
     message_runtime
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
