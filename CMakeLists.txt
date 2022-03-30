@@ -22,7 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
 include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
 
 add_message_files( FILES
-  effort_command.msg
+  setpoint.msg
 )
 
 generate_messages(DEPENDENCIES std_msgs)
@@ -41,6 +41,7 @@ catkin_package(
 
 add_library(${PROJECT_NAME}
   src/joint_group_effort_ff_controller.cpp
+  src/joint_group_velocity_ff_controller.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})

@@ -38,7 +38,7 @@ It expects a EffortJointInterface type of hardware interface. The control is don
 
 ### Subscribed Topics
 
-* **`command`** ([joint_group_ff_controllers/effort_command])
+* **`command`** ([joint_group_ff_controllers/setpoint])
 
 	The positions, velocities and efforts set point for each joint, aswell as the timeout value.<br/>
 	*Note: if `timeout < 0`, then the timeout is ignored and the command will be executed indefinitely.*

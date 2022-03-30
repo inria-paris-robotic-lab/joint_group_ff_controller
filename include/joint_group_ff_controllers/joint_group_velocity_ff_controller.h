@@ -12,32 +12,30 @@ namespace joint_group_ff_controllers
 {
 
 /**
- * \brief Tracks position, velocity and effort commands for a set of joints using a PD-feedforward controller.
+ * \brief Tracks position, velocity commands for a set of joints using a proportionnal+feedforward controller.
  *
  * The controller has two functionning mode :
- * - The normal one that applies a feedforward-PD,
- * - The safety one that tries to keep the joint in their current position, using a simple PD, if the timeout is reached (for safety purposes).
+ * - The normal one that applies a feedforward-P,
+ * - The safety one that tries to keep the joint in their current position, using a simple P, if the timeout is reached (for safety purposes).
  *
  * \section ROS interface
  *
- * \param type Must be "joint_group_ff_controllers/JointGroupEffortFFController".
+ * \param type Must be "joint_group_ff_controllers/JointGroupVelocityFFController".
  * \param joints List of names of the joints to control.
  * For each joint :
  * \param <joint>/kp Position gain
- * \param <joint>/kd Velocity gain
  * \param <joint>/kp_safe Position gain when timeout occured
- * \param <joint>/kd_safe Velocity gain when timeout occured
  *
  * Subscribes to:
- * - \b command (joint_group_ff_controllers::setpoint) : The joint positions, velocities and efforts to apply, aswell as the timeout value. (if timeout < 0, then no timeout will be applied)
+ * - \b command (joint_group_ff_controllers::setpoint) : The joint positions and velocities to apply (efforts filed is ignored), aswell as the timeout value. (if timeout < 0, then no timeout will be applied)
  */
-class JointGroupEffortFFController : public controller_interface::Controller<hardware_interface::EffortJointInterface>
+class JointGroupVelocityFFController : public controller_interface::Controller<hardware_interface::VelocityJointInterface>
 {
 public:
-  JointGroupEffortFFController();
-  ~JointGroupEffortFFController();
+  JointGroupVelocityFFController();
+  ~JointGroupVelocityFFController();
 
-  bool init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle &n);
+  bool init(hardware_interface::VelocityJointInterface* hw, ros::NodeHandle &n);
   void update(const ros::Time& /*time*/, const ros::Duration& /*period*/);
 
 private:
@@ -48,9 +46,7 @@ private:
 
   // Gains
   std::vector<double> kp_;
-  std::vector<double> kd_;
   std::vector<double> kp_safe_;
-  std::vector<double> kd_safe_;
 
   // Command subscriber
   ros::Subscriber sub_command_;

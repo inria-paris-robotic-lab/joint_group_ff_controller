@@ -1,13 +1,13 @@
-#include <joint_group_ff_controllers/joint_group_effort_ff_controller.h>
+#include <joint_group_ff_controllers/joint_group_velocity_ff_controller.h>
 #include <pluginlib/class_list_macros.hpp>
 
 namespace joint_group_ff_controllers
 {
 
-  JointGroupEffortFFController::JointGroupEffortFFController() {}
-  JointGroupEffortFFController::~JointGroupEffortFFController() {sub_command_.shutdown();}
+  JointGroupVelocityFFController::JointGroupVelocityFFController() {}
+  JointGroupVelocityFFController::~JointGroupVelocityFFController() {sub_command_.shutdown();}
 
-  bool JointGroupEffortFFController::init(hardware_interface::EffortJointInterface* hw, ros::NodeHandle &n)
+  bool JointGroupVelocityFFController::init(hardware_interface::VelocityJointInterface* hw, ros::NodeHandle &n)
   {
     // List of controlled joints
     std::string param_name = "joints";
@@ -25,9 +25,7 @@ namespace joint_group_ff_controllers
 
     // Init gains
     kp_.resize(n_joints_);
-    kd_.resize(n_joints_);
     kp_safe_.resize(n_joints_);
-    kd_safe_.resize(n_joints_);
 
     // Init joints and parameters
     for(unsigned int i=0; i<n_joints_; i++)
@@ -46,12 +44,10 @@ namespace joint_group_ff_controllers
 
       // Fetch gains
       if(!n.getParam(joint_name + "/kp", kp_[i]) ||
-         !n.getParam(joint_name + "/kd", kd_[i]) ||
-         !n.getParam(joint_name + "/kp_safe", kp_safe_[i]) ||
-         !n.getParam(joint_name + "/kd_safe", kd_safe_[i])
+         !n.getParam(joint_name + "/kp_safe", kp_safe_[i])
          )
       {
-        ROS_ERROR_STREAM("Unable to read kp, kd, kp_safe, kd_safe parameters for joint: " << joint_name);
+        ROS_ERROR_STREAM("Unable to read kp, kp_safe parameters for joint: " << joint_name);
         return false;
       }
     }
@@ -65,11 +61,11 @@ namespace joint_group_ff_controllers
     are_positions_held_ = false;
     held_positions_ = std::vector<double>(n_joints_);
 
-    sub_command_ = n.subscribe<joint_group_ff_controllers::setpoint>("command", 1, &JointGroupEffortFFController::commandCB, this);
+    sub_command_ = n.subscribe<joint_group_ff_controllers::setpoint>("command", 1, &JointGroupVelocityFFController::commandCB, this);
     return true;
   }
 
-  void JointGroupEffortFFController::update(const ros::Time& time, const ros::Duration& period)
+  void JointGroupVelocityFFController::update(const ros::Time& time, const ros::Duration& period)
   {
     // Get the latest command
     joint_group_ff_controllers::setpoint& commands_ = *commands_buffer_.readFromRT();
@@ -87,22 +83,18 @@ namespace joint_group_ff_controllers
         // Command for the joint, depending on the mode
         double command_position = timeout ? held_positions_[i] : commands_.positions [i];
         double command_velocity = timeout ? 0                  : commands_.velocities[i];
-        double command_effort   = timeout ? 0                  : commands_.efforts   [i];
 
         // Read joint
         double current_position = joints_[i].getPosition();
-        double current_velocity = joints_[i].getVelocity();
 
         // Compute position error
         double position_error = command_position - current_position;
-        double velocity_error = command_velocity - current_velocity;
 
         // Compute control
-        double control_effort = (timeout ? kp_safe_[i] : kp_[i]) * position_error
-                                + (timeout ? kd_safe_[i] : kd_[i]) * velocity_error
-                                + command_effort;
+        double control_velocity = (timeout ? kp_safe_[i] : kp_[i]) * position_error
+                                + command_velocity;
 
-        joints_[i].setCommand(control_effort);
+        joints_[i].setCommand(control_velocity);
     }
     // If the timeout was reached in the loop, print a user warning
     if(timeout && !are_positions_held_) {
@@ -112,7 +104,7 @@ namespace joint_group_ff_controllers
     are_positions_held_ = timeout;
   }
 
-  void JointGroupEffortFFController::commandCB(const joint_group_ff_controllers::setpointConstPtr& msg)
+  void JointGroupVelocityFFController::commandCB(const joint_group_ff_controllers::setpointConstPtr& msg)
   {
     // Filter message based on commands sizes
     if(msg->positions.size()!=n_joints_)
@@ -125,11 +117,6 @@ namespace joint_group_ff_controllers
       ROS_ERROR_STREAM("Dimension of command velocities (" << msg->velocities.size() << ") does not match number of joints (" << n_joints_ << ")! Not executing!");
       return;
     }
-    if(msg->efforts.size()!=n_joints_)
-    {
-      ROS_ERROR_STREAM("Dimension of command efforts (" << msg->efforts.size() << ") does not match number of joints (" << n_joints_ << ")! Not executing!");
-      return;
-    }
     // Save latest commands
     commands_buffer_.writeFromNonRT(*msg);
 
@@ -139,4 +126,4 @@ namespace joint_group_ff_controllers
 
 } // namespace
 
-PLUGINLIB_EXPORT_CLASS( joint_group_ff_controllers::JointGroupEffortFFController, controller_interface::ControllerBase)
+PLUGINLIB_EXPORT_CLASS( joint_group_ff_controllers::JointGroupVelocityFFController, controller_interface::ControllerBase)

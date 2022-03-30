@@ -2,7 +2,13 @@
 
   <class name="joint_group_ff_controllers/JointGroupEffortFFController" type="joint_group_ff_controllers::JointGroupEffortFFController" base_class_type="controller_interface::ControllerBase">
     <description>
-      The JointGroupEffortFFController tracks position, velocity and effort commands for a set of joints using a pid-feedforward controller. It expects a EffortJointInterface type of hardware interface.
+      The JointGroupEffortFFController tracks position, velocity and effort commands for a set of joints using a PD-feedforward controller. It expects a EffortJointInterface type of hardware interface.
+    </description>
+  </class>
+
+  <class name="joint_group_ff_controllers/JointGroupVelocityFFController" type="joint_group_ff_controllers::JointGroupVelocityFFController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      The JointGroupVelocityFFController tracks position and velocity commands for a set of joints using a P-feedforward controller. It expects a VelocityJointInterface type of hardware interface.
     </description>
   </class>
 
