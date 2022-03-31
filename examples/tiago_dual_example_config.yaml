@@ -1,4 +1,4 @@
-arm_right_controller_test:
+arm_right_controller:
   type: joint_group_ff_controllers/JointGroupEffortFFController
   joints:
   - arm_right_1_joint
@@ -8,15 +8,15 @@ arm_right_controller_test:
   - arm_right_5_joint
   - arm_right_6_joint
   - arm_right_7_joint
-  arm_right_1_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
-  arm_right_2_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
-  arm_right_3_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
-  arm_right_4_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
-  arm_right_5_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
-  arm_right_6_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
-  arm_right_7_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
+  arm_right_1_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
+  arm_right_2_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
+  arm_right_3_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
+  arm_right_4_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
+  arm_right_5_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
+  arm_right_6_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
+  arm_right_7_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
 
-arm_left_controller_test:
+arm_left_controller:
   type: joint_group_ff_controllers/JointGroupEffortFFController
   joints:
   - arm_left_1_joint
@@ -26,10 +26,10 @@ arm_left_controller_test:
   - arm_left_5_joint
   - arm_left_6_joint
   - arm_left_7_joint
-  arm_left_1_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
-  arm_left_2_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
-  arm_left_3_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
-  arm_left_4_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
-  arm_left_5_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
-  arm_left_6_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
-  arm_left_7_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
+  arm_left_1_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
+  arm_left_2_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
+  arm_left_3_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
+  arm_left_4_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
+  arm_left_5_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
+  arm_left_6_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }
+  arm_left_7_joint: { kp: 1., kd: 1., kp_safe: 1000, kd_safe: 64. }

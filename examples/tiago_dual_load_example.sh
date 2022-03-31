@@ -9,9 +9,5 @@ rosparam load $(rospack find joint_group_ff_controllers)/examples/tiago_dual_exa
 rosrun controller_manager controller_manager stop arm_left_controller arm_right_controller
 rosrun controller_manager controller_manager unload arm_left_controller arm_right_controller
 
-# Stop and unload potential previous joint_group_ff_controllers/JointGroupVelocityFFController already started
-rosrun controller_manager controller_manager stop arm_left_controller_test arm_right_controller_test
-rosrun controller_manager controller_manager unload arm_left_controller_test arm_right_controller_test
-
 # Load and run new joint_group_ff_controllers/JointGroupVelocityFFController controlles
-rosrun controller_manager controller_manager spawn arm_left_controller_test arm_right_controller_test
+rosrun controller_manager controller_manager spawn arm_left_controller arm_right_controller
