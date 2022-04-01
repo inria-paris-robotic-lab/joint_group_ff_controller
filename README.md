@@ -73,4 +73,48 @@ It expects a EffortJointInterface type of hardware interface. The control is don
 >   arm_right_6_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
 >   arm_right_7_joint: { kp: .01, kd: .01, kp_safe: 1000, kd_safe: 64. }
 > ```
-> *Note :* Usually kp and kd are set to small values as the effort feed-forward should do most of the "work". kp_safe and kd_safe on the other hand are buigger as they should be able to keep the robot stable in it's current position (without any feed-forward), in case of timeout.
+> *Note :* Usually kp and kd are set to small values as the effort feed-forward should do most of the "work". kp_safe and kd_safe on the other hand are bigger as they should be able to keep the robot stable in it's current position (without any feed-forward), when timeout occurs.
+
+## Velocity controller : joint_group_velocity_ff_controller
+
+This controller tracks position and velocity commands for a set of joints using a p-feedforward controller.<br/>
+It expects a VelocityJointInterface type of hardware interface. The control is done as followed, for each joint : <br/>
+![block_velocity.png](./materials/block_velocity.png)
+
+
+### Subscribed Topics
+
+* **`command`** ([joint_group_ff_controllers/setpoint])
+
+	The positions and velocities set point for each joint (efforts field is ignored in this case), aswell as the timeout value.<br/>
+	*Note: if `timeout < 0`, then the timeout is ignored and the command will be executed indefinitely.*
+
+### Parameters
+
+* **`joints`** (string[])
+
+	The list of joints to control.
+
+* **`<joint>`** (associative array)
+
+	Key/Value pairs for the controller gains. Expected keys are `kp`, `kp_safe`.
+
+> Controller configuration example
+> ```
+> right_arm_ff_controller:
+>   type: joint_group_ff_controllers/JointGroupVelocityFFController
+>   joints:
+>   - right_shoulder_pan_joint
+>   - right_shoulder_lift_joint
+>   - right_elbow_joint
+>   - right_wrist_1_joint
+>   - right_wrist_2_joint
+>   - right_wrist_3_joint
+>   right_shoulder_pan_joint:  { kp: .1, kp_safe: 100 }
+>   right_shoulder_lift_joint: { kp: .1, kp_safe: 100 }
+>   right_elbow_joint:         { kp: .1, kp_safe: 100 }
+>   right_wrist_1_joint:       { kp: .1, kp_safe: 100 }
+>   right_wrist_2_joint:       { kp: .1, kp_safe: 100 }
+>   right_wrist_3_joint:       { kp: .1, kp_safe: 100 }
+> ```
+> *Note :* Usually kp is set to small values as the effort feed-forward should do most of the "work". kp_safe on the other hand is bigger as they should be able to keep the robot stable in it's current position (without any feed-forward), when timeout occurs.
