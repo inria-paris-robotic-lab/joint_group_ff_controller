@@ -28,6 +28,7 @@ namespace joint_group_ff_controllers
     kd_.resize(n_joints_);
     kp_safe_.resize(n_joints_);
     kd_safe_.resize(n_joints_);
+    hrdw_cst_.resize(n_joints_);
 
     // Init joints and parameters
     for(unsigned int i=0; i<n_joints_; i++)
@@ -53,6 +54,20 @@ namespace joint_group_ff_controllers
       {
         ROS_ERROR_STREAM("Unable to read kp, kd, kp_safe, kd_safe parameters for joint: " << joint_name);
         return false;
+      }
+
+      // Fetch optionnal parameters
+      if(n.hasParam(joint_name + "/hardware")) {
+        double mot_cst_;
+        double red_cst_;
+        if(!n.getParam(joint_name + "/hardware/motor_torque_constant", mot_cst_) ||
+           !n.getParam(joint_name + "/hardware/reduction_ratio", red_cst_)) {
+             ROS_ERROR_STREAM("Hardware constant badly defined. Both " << joint_name << "/hardware/motor_torque_constant and " << joint_name << "/hardware/reduction_ratio should be either defined or undefined.");
+             return false;
+           }
+          hrdw_cst_[i] = 1 / mot_cst_ * red_cst_;
+      } else {
+        hrdw_cst_[i] = 1;
       }
     }
 
@@ -101,6 +116,9 @@ namespace joint_group_ff_controllers
         double control_effort = (timeout ? kp_safe_[i] : kp_[i]) * position_error
                                 + (timeout ? kd_safe_[i] : kd_[i]) * velocity_error
                                 + command_effort;
+
+        // Apply hardware constant
+        control_effort *= hrdw_cst_[i];
 
         joints_[i].setCommand(control_effort);
     }

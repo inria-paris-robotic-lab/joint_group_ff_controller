@@ -51,6 +51,7 @@ private:
   std::vector<double> kd_;
   std::vector<double> kp_safe_;
   std::vector<double> kd_safe_;
+  std::vector<double> hrdw_cst_;
 
   // Command subscriber
   ros::Subscriber sub_command_;
