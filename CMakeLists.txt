@@ -44,6 +44,8 @@ add_library(${PROJECT_NAME}
   src/joint_group_velocity_ff_controller.cpp
 )
 
+add_dependencies(${PROJECT_NAME} joint_group_ff_controllers_generate_messages_cpp)
+
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 # Install
