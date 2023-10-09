@@ -22,7 +22,7 @@ This is research code, expect that it changes often and any fitness for a partic
 To build from source, clone the latest version from this repository into your catkin workspace and compile the package using
 
 	cd catkin_workspace/src
-	git clone https://github.com/inria-paris-robotic-lab/joint_group_ff_controllers.git
+	git clone https://github.com/inria-paris-robotics-lab/joint_group_ff_controllers.git
 	cd ../
 	rosdep install --from-paths . --ignore-src
 	catkin build
