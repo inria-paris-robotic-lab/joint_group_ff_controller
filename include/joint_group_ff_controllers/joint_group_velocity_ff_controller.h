@@ -35,8 +35,9 @@ public:
   JointGroupVelocityFFController();
   ~JointGroupVelocityFFController();
 
-  bool init(hardware_interface::VelocityJointInterface* hw, ros::NodeHandle &n);
-  void update(const ros::Time& /*time*/, const ros::Duration& /*period*/);
+  bool init(hardware_interface::VelocityJointInterface* hw, ros::NodeHandle &n) override;
+  void starting(const ros::Time& /*time*/) override;
+  void update(const ros::Time& /*time*/, const ros::Duration& period) override;
 
 private:
   std::vector< std::string > joint_names_;

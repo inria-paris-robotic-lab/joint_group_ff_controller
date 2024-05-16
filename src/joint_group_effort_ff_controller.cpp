@@ -56,20 +56,24 @@ namespace joint_group_ff_controllers
       }
     }
 
-    // Init commands
-    joint_group_ff_controllers::setpoint dummy;
-    dummy.timeout = ros::Duration(0);
-    commands_buffer_.writeFromNonRT(dummy);
-
-    // Init safety measures
-    are_positions_held_ = false;
+    // Init vector size
     held_positions_ = std::vector<double>(n_joints_);
 
     sub_command_ = n.subscribe<joint_group_ff_controllers::setpoint>("command", 1, &JointGroupEffortFFController::commandCB, this);
     return true;
   }
 
-  void JointGroupEffortFFController::update(const ros::Time& time, const ros::Duration& period)
+  void JointGroupEffortFFController::starting(const ros::Time&)
+  {
+    // Force the controller to timeout and hold current position on start
+    joint_group_ff_controllers::setpoint dummy;
+    commands_buffer_.writeFromNonRT(dummy);
+    dummy.timeout = ros::Duration(0);
+
+    are_positions_held_ = false;
+  }
+
+  void JointGroupEffortFFController::update(const ros::Time& /*time*/, const ros::Duration& period)
   {
     // Get the latest command
     joint_group_ff_controllers::setpoint& commands_ = *commands_buffer_.readFromRT();
